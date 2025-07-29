@@ -61,7 +61,7 @@ public:
 
         const std::uint32_t entry_count = param.entries.size();
         const std::uint64_t first_pointer = 8;
-        output_data.write<std::uint32_t>(asbr::player_color_param::version(), std::endian::little);
+        output_data.write<std::uint32_t>(param.version, std::endian::little);
         output_data.write<std::uint32_t>(entry_count, std::endian::little);
         output_data.write<std::uint64_t>(first_pointer, std::endian::little);
 

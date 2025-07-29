@@ -14,7 +14,7 @@ public:
     struct entry { 
         nucc::crc32 crc32_id;
         std::string message{"<EMPTY>"};
-        std::uint32_t ref_crc32_id{0};
+        nucc::crc32 ref_crc32_id;
         std::int16_t is_ref{-1};
         std::int64_t file_index{-1};
         std::int64_t cue_index{-1};

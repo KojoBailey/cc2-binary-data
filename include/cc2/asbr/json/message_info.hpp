@@ -6,6 +6,9 @@
 
 #include <kojo/logger.hpp>
 
+#include <filesystem>
+#include <format>
+
 namespace cc2 {
 
 template<>
@@ -20,32 +23,32 @@ public:
         return result;
     }
     
-    static nlohmann::ordered_json write(const asbr::message_info& param) {
+    static nlohmann::ordered_json write(const asbr::message_info& param, std::filesystem::path hashlist_path = "") {
         nlohmann::ordered_json result;
 
+        kojo::binary hashlist_store{hashlist_path};
+        kojo::binary_view hashlist_data{hashlist_store};
         std::unordered_map<std::string, std::string> hashlist;
-        kojo::binary hashlist_data{hashlist_path};
-        while (!hashlist_data.at_end()) {
-            std::string buffer = hashlist_data.read_str();
-            hashlist[buffer] = hashlist_data.read_str();
+        while (hashlist_data.get_pos() < hashlist_store.size()) {
+            std::string buffer = hashlist_data.read<std::string_view>().data();
+            hashlist[buffer] = hashlist_data.read<std::string_view>();
         }
-        nlohmann::ordered_json json;
 
-        json["Version"] = 250103;
-        json["Filetype"] = "messageInfo";
-        json["Language"] = language;
+        result["Version"] = 250103;
+        result["Filetype"] = "messageInfo";
+        result["Language"] = param.language;
         
-        for (auto& [key, value] : entry_order) {
-            auto& entry = entries[value];
+        for (auto& [key, value] : param.entry_order) {
+            auto& entry = param.entries.at(value);
 
             std::string hash = std::format("{:08x}", value);
             if (hashlist.contains(hash)) {
                 hash = hashlist[hash];
             }
-            nlohmann::ordered_json& json_entry = json[hash];
+            nlohmann::ordered_json& json_entry = result[hash];
 
             if (entry.is_ref == 1) {
-                hash = std::format("{:08x}", entry.ref_crc32_id);
+                hash = std::format("{:08x}", entry.ref_crc32_id.id());
                 if (hashlist.contains(hash)) {
                     hash = hashlist[hash];
                 }
@@ -60,8 +63,6 @@ public:
             if (entry.cue_index != -1)
                 json_entry["ADX2_Cue_Index"] = entry.cue_index;
         }
-
-        return json;
 
         return result;
     }

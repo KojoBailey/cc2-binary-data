@@ -32,7 +32,7 @@ public:
             log.warn(
                 kojo::logger::status::version,
                 std::format("Expected version `1001` for messageInfo data, but instead got `{}`.", 1001, result.version),
-                "Ensure the data matches the same format as version `1001`.",
+                "Ensure the data matches the same format as version `1001`."
             );
         auto entry_count = data.read<std::uint32_t>(std::endian::little);
         auto first_pointer = data.read<std::uint64_t>(std::endian::little);
