@@ -1,6 +1,7 @@
 #ifndef KOJO_CC2_ASBR_PLAYERCOLORPARAMJSON
 #define KOJO_CC2_ASBR_PLAYERCOLORPARAMJSON
 
+#include <cc2/json_serializer.hpp>
 #include <cc2/asbr/player_color_param.hpp>
 
 #include <kojo/logger.hpp>

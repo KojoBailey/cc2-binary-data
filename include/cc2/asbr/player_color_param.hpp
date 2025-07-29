@@ -2,9 +2,11 @@
 #define KOJO_CC2_ASBR_PLAYERCOLORPARAM
 
 #include <cc2/binary_data.hpp>
-#include <cc2/json_serializable.hpp>
 
 #include <nucc/utils/rgb.hpp>
+
+#include <map>
+#include <unordered_map>
 
 namespace cc2 {
     namespace asbr {
