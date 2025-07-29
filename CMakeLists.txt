@@ -23,4 +23,6 @@ target_link_libraries(${PROJECT_NAME}
         nlohmann_json
 )
 
+add_library(kojo::cc2_binary_data ALIAS cc2_binary_data)
+
 message(STATUS "SOURCES = ${SOURCES}")
