@@ -1,5 +1,5 @@
-#ifndef KOJO_CC2_JSON_SERIALIZABLE
-#define KOJO_CC2_JSON_SERIALIZABLE
+#ifndef KOJO_CC2_JSON_SERIALIZER
+#define KOJO_CC2_JSON_SERIALIZER
 
 #include <nlohmann/json.hpp>
 
@@ -14,4 +14,4 @@ public:
 
 }
 
-#endif // KOJO_CC2_JSON_SERIALIZABLE
+#endif // KOJO_CC2_JSON_SERIALIZER
