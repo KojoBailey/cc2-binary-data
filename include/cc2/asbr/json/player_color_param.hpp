@@ -1,8 +1,8 @@
-#ifndef KOJO_CC2_ASBR_PLAYERCOLORPARAMJSON
-#define KOJO_CC2_ASBR_PLAYERCOLORPARAMJSON
+#ifndef KOJO_CC2_ASBR_JSON_PLAYERCOLORPARAM
+#define KOJO_CC2_ASBR_JSON_PLAYERCOLORPARAM
 
 #include <cc2/json_serializer.hpp>
-#include <cc2/asbr/player_color_param.hpp>
+#include <cc2/asbr/binary/player_color_param.hpp>
 
 #include <kojo/logger.hpp>
 
@@ -57,4 +57,4 @@ public:
 
 }
 
-#endif // KOJO_CC2_ASBR_PLAYERCOLORPARAMJSON
+#endif // KOJO_CC2_ASBR_JSON_PLAYERCOLORPARAM
