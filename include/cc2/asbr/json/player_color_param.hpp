@@ -2,7 +2,7 @@
 #define KOJO_CC2_ASBR_JSON_PLAYERCOLORPARAM
 
 #include <cc2/json_serializer.hpp>
-#include <cc2/asbr/binary/player_color_param.hpp>
+#include <cc2/asbr/player_color_param.hpp>
 
 #include <kojo/logger.hpp>
 
@@ -29,13 +29,8 @@ public:
                 "Ensure all hex codes are strings with the format \"#RRGGBB\". Alpha channel is not supported."
             );
 
-            asbr::player_color_param::entry entry_buffer;
-            entry_buffer.character_id = key.substr(0, 4) + "0" + key.at(5);
-            entry_buffer.costume_index = key.at(4) - '0';
-            entry_buffer.color.from_hex_code(value);
-            entry_buffer.tint_index = key.at(9);
-
-            result.entries[key] = entry_buffer;
+            nucc::rgb color;
+            result.entries[key] = color.from_hex_code(value);
         }
 
         return result;
@@ -48,7 +43,7 @@ public:
         result["Filetype"] = "PlayerColorParam";
 
         for (auto& [key, entry] : param.entries) {
-            result[key] = entry.color.to_hex_code();
+            result[key] = entry.to_hex_code();
         }
 
         return result;
