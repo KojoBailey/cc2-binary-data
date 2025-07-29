@@ -1,0 +1,58 @@
+# --- CMake build directories ---
+/build/
+/out/
+/bin/
+/lib/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+/install_manifest.txt
+
+# --- Generated project files ---
+*.ninja
+*.ninja_deps
+*.ninja_log
+compile_commands.json
+
+# --- CMake presets cache ---
+CMakePresets.json.user
+CMakeUserPresets.json
+CMakeCache.txt
+CTestTestfile.cmake
+
+# --- IDE files ---
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# --- OS-specific files ---
+.DS_Store
+Thumbs.db
+
+# --- Compiler/linker outputs ---
+*.obj
+*.o
+*.lo
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+
+# --- Logs and debug ---
+*.log
+*.trace
+*.gcno
+*.gcda
+*.gcov
+*.pdb
+*.ilk
+*.stackdump
+
+# --- Temporary files ---
+*.swp
+*~
