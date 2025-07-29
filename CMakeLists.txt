@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 project(cc2_binary_data VERSION 0.1.0 DESCRIPTION "CyberConnect2 Binary Data Library")
+set(CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
 find_package(nlohmann_json QUIET)
@@ -16,10 +17,8 @@ file(GLOB_RECURSE SOURCES src/*.cpp)
 add_library(cc2_binary_data STATIC ${SOURCES})
 target_include_directories(cc2_binary_data PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set_target_properties(cc2_binary_data PROPERTIES CXX_STANDARD 23)
-
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC
+    PUBLIC  
         kojo::nucc
         nlohmann_json
 )
