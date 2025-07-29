@@ -27,7 +27,7 @@ public:
         }
         kojo::binary_view data{src, start};
 
-        auto VERSION = data.read<std::uint32_t>(std::endian::little);
+        result.version = data.read<std::uint32_t>(std::endian::little);
         auto entry_count = data.read<std::uint32_t>(std::endian::little);
         auto first_pointer = data.read<std::uint64_t>(std::endian::little);
         data.change_pos(first_pointer - 8);

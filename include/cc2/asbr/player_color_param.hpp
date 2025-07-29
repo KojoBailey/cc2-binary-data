@@ -11,10 +11,7 @@ class player_color_param {
 public:
     std::map<std::string, nucc::rgb> entries;
 
-    static int version() { return VERSION; }
-
-private:
-    static const std::uint32_t VERSION = 1000;
+    std::uint32_t version{1000};
 };
 
 }
