@@ -1,0 +1,6 @@
+[submodule "extern/nucc"]
+	path = extern/nucc
+	url = https://github.com/KojoBailey/nucc-cpp-library
+[submodule "extern/json"]
+	path = extern/json
+	url = https://github.com/nlohmann/json
