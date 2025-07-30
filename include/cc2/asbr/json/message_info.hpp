@@ -69,11 +69,15 @@ public:
                 );
             }
 
-            if (value.contains("ADX2_File"))
+            if (value.contains("ADX2_File")) {
                 entry_buffer.file_index = convert_file_str(value["ADX2_File"]);
+                entry_buffer.has_file_index = true;
+            }
 
-            if (value.contains("ADX2_Cue_Index"))
+            if (value.contains("ADX2_Cue_Index")) {
                 entry_buffer.cue_index = value["ADX2_Cue_Index"];
+                entry_buffer.has_cue_index = true;
+            }
 
             result.entries[entry_buffer.key()] = entry_buffer;
         }
