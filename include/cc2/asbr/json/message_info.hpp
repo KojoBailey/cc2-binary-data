@@ -18,7 +18,65 @@ public:
         asbr::message_info result;
         kojo::logger log{"CC2 Binary Data"};
 
-        
+        if (json.is_null()) {
+            log.error(
+                kojo::logger::status::null_data,
+                "Provided JSON data is null/invalid.",
+                "Ensure the JSON is formatted correctly and without errors."
+            );
+            return result;
+        }
+
+        result.language = json["Language"];
+        load_adx2_file_list();
+
+        std::unordered_map<std::string, std::string> colors;
+        for (auto& [key, value] : json["Colors"].items()) {
+            colors[key] = value.template get<std::string>().substr(1, 8);
+        }
+
+        for (const auto& [key, value] : json.items()) {
+            if (key == "Language" || key == "Version" || key == "Filetype" || key == "Colors") continue;
+
+            asbr::message_info::entry entry_buffer;
+
+            entry_buffer.crc32_id.load(key);
+
+            if (value.contains("Reference")) {
+                std::string reference_str = value["Reference"];
+                entry_buffer.ref_crc32_id = nucc::crc32::hash(reference_str);
+                entry_buffer.has_ref_crc32_id = true;
+                entry_buffer.message = std::format("<text {} text_2 />", reference_str);
+                entry_buffer.has_message = true;
+            } else if (value.contains("Message")) {
+                entry_buffer.message = value["Message"];
+                entry_buffer.has_message = true;
+                for (auto& [key, value] : colors) {
+                    entry_buffer.message = std::regex_replace(entry_buffer.message,
+                        std::regex(std::format("<{}>", key)),
+                        std::format("<color 0x{}>", value)
+                    );
+                    entry_buffer.message = std::regex_replace(entry_buffer.message,
+                        std::regex(std::format("</{}>", key)),
+                        "</color>"
+                    );
+                }
+            } else {
+                log.error(
+                    kojo::logger::status::missing_field,
+                    std::format("JSON data for entry \"{}\" does not contain required field \"Message\".", key),
+                    "Add the \"Message\" field, or the \"Reference\" field if a reference."
+                );
+            }
+
+            if (value.contains("ADX2_File"))
+                entry_buffer.file_index = convert_file_str(value["ADX2_File"]);
+
+            if (value.contains("ADX2_Cue_Index"))
+                entry_buffer.cue_index = value["ADX2_Cue_Index"];
+
+            result.entries[entry_buffer.key()] = entry_buffer;
+        }
 
         return result;
     }
@@ -38,16 +96,16 @@ public:
         result["Filetype"] = "messageInfo";
         result["Language"] = param.language;
         
-        for (auto& [key, value] : param.entry_order) {
-            auto& entry = param.entries.at(value);
+        for (std::uint32_t key : param.sorted_keys) {
+            auto& entry = param.entries.at(key);
 
-            std::string hash = std::format("{:08x}", value);
+            std::string hash = std::format("{:08x}", key);
             if (hashlist.contains(hash)) {
                 hash = hashlist[hash];
             }
             nlohmann::ordered_json& json_entry = result[hash];
 
-            if (entry.is_ref == 1) {
+            if (entry.ref_crc32_id.id() != 0) {
                 hash = std::format("{:08x}", entry.ref_crc32_id.id());
                 if (hashlist.contains(hash)) {
                     hash = hashlist[hash];
@@ -68,6 +126,91 @@ public:
     }
 
 private:
+    static std::unordered_map<std::string_view, int> adx2_file_list;
+
+    static void load_adx2_file_list() {
+        if (!adx2_file_list.empty()) return;
+
+        adx2_file_list["v_sys_etc"]     = 1;
+        adx2_file_list["v_mob"]         = 2;
+        adx2_file_list["v_btl_0bao01"]  = 3;
+        adx2_file_list["v_btl_1dio01"]  = 4;
+        adx2_file_list["v_btl_1jnt01"]  = 5;
+        adx2_file_list["v_btl_1sdw01"]  = 6;
+        adx2_file_list["v_btl_1zpl01"]  = 7;
+        adx2_file_list["v_btl_2csr01"]  = 8;
+        adx2_file_list["v_btl_2esd01"]  = 9;
+        adx2_file_list["v_btl_2jsp01"]  = 10;
+        adx2_file_list["v_btl_2krs01"]  = 11;
+        adx2_file_list["v_btl_2lsa01"]  = 12;
+        adx2_file_list["v_btl_2wmu01"]  = 13;
+        adx2_file_list["v_btl_3abd01"]  = 14;
+        adx2_file_list["v_btl_3dio01"]  = 15;
+        adx2_file_list["v_btl_3hhs01"]  = 16;
+        adx2_file_list["v_btl_3igy01"]  = 17;
+        adx2_file_list["v_btl_3jsp01"]  = 18;
+        adx2_file_list["v_btl_3jtr01"]  = 19;
+        adx2_file_list["v_btl_3kki01"]  = 20;
+        adx2_file_list["v_btl_3mra01"]  = 21;
+        adx2_file_list["v_btl_3pln01"]  = 22;
+        adx2_file_list["v_btl_3psp01"]  = 23;
+        adx2_file_list["v_btl_3vni01"]  = 24;
+        adx2_file_list["v_btl_4jsk01"]  = 25;
+        adx2_file_list["v_btl_4jtr01"]  = 26;
+        adx2_file_list["v_btl_4kir01"]  = 27;
+        adx2_file_list["v_btl_4koi01"]  = 28;
+        adx2_file_list["v_btl_4kwk01"]  = 29;
+        adx2_file_list["v_btl_4oky01"]  = 30;
+        adx2_file_list["v_btl_4oti01"]  = 31;
+        adx2_file_list["v_btl_4rhn01"]  = 32;
+        adx2_file_list["v_btl_4sgc01"]  = 33;
+        adx2_file_list["v_btl_4ykk01"]  = 34;
+        adx2_file_list["v_btl_5bct01"]  = 35;
+        adx2_file_list["v_btl_5dvl01"]  = 36;
+        adx2_file_list["v_btl_5fgo01"]  = 37;
+        adx2_file_list["v_btl_5gac01"]  = 38;
+        adx2_file_list["v_btl_5grn01"]  = 39;
+        adx2_file_list["v_btl_5mst01"]  = 40;
+        adx2_file_list["v_btl_5nrc01"]  = 41;
+        adx2_file_list["v_btl_5prs01"]  = 42;
+        adx2_file_list["v_btl_5trs01"]  = 43;
+        adx2_file_list["v_btl_6ans01"]  = 44;
+        adx2_file_list["v_btl_6elm01"]  = 45;
+        adx2_file_list["v_btl_6fit01"]  = 46;
+        adx2_file_list["v_btl_6jln01"]  = 47;
+        adx2_file_list["v_btl_6pci02"]  = 48;
+        adx2_file_list["v_btl_7dio01"]  = 49;
+        adx2_file_list["v_btl_7jir01"]  = 50;
+        adx2_file_list["v_btl_7jny01"]  = 51;
+        adx2_file_list["v_btl_7vtn01"]  = 52;
+        adx2_file_list["v_btl_8jsk01"]  = 53;
+        adx2_file_list["v_card"]        = 56;
+        adx2_file_list["v_gallery"]     = 57;
+        adx2_file_list["v_btl_6wet01"]  = 58;
+        adx2_file_list["v_sys_6wet01"]  = 59;
+        adx2_file_list["v_btl_5ris01"]  = 60;
+        adx2_file_list["v_sys_5ris01"]  = 61;
+        adx2_file_list["v_btl_6pci01"]  = 62;
+        adx2_file_list["v_sys_6pci01"]  = 63;
+        adx2_file_list["v_btl_2shm01"]  = 64;
+        adx2_file_list["v_sys_2shm01"]  = 65;
+        adx2_file_list["v_btl_4kch01"]  = 66;
+        adx2_file_list["v_sys_4kch01"]  = 67;
+        adx2_file_list["v_btl_7dio02"]  = 68;
+        adx2_file_list["v_sys_7dio02"]  = 69;
+        adx2_file_list["v_btl_5abc01"]  = 70;
+        adx2_file_list["v_sys_5abc01"]  = 71;
+        adx2_file_list["v_btl_4fgm01"]  = 72;
+        adx2_file_list["v_sys_4fgm01"]  = 73;
+        adx2_file_list["v_btl_8wou01"]  = 74;
+        adx2_file_list["v_sys_8wou01"]  = 75;
+    }
+
+    static int convert_file_str(std::string file) {
+        if (!adx2_file_list.contains(file)) return -1;
+        return adx2_file_list[file];
+    }
+    
     static constexpr std::string convert_file_index(int index) {
         switch(index) {
             case 1:     return "v_sys_etc";

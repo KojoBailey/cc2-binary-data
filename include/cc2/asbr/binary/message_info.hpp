@@ -45,14 +45,15 @@ public:
             auto message_ptr            = data.read<std::uint64_t>(std::endian::little);
             entry_buffer.message        = data.read<std::string_view>(message_ptr - sizeof(message_ptr));
             entry_buffer.ref_crc32_id   = data.read<std::uint32_t>(std::endian::big);
-            entry_buffer.is_ref         = data.read<std::int16_t>(std::endian::little);
+            auto is_ref                 = data.read<std::int16_t>(std::endian::little); // Can be auto-detected.
             entry_buffer.file_index     = data.read<std::int16_t>(std::endian::little);
             entry_buffer.cue_index      = data.read<std::int16_t>(std::endian::little);
             data.change_pos(6); // Skip unknown constants.
 
             result.entries[entry_buffer.key()] = entry_buffer;
-            result.entry_order[entry_buffer.order_key()] = entry_buffer.key();
         }
+
+        result.sort_keys();
 
         return result;
     }

@@ -13,7 +13,9 @@ if (NOT TARGET kojo::nucc)
     add_subdirectory(extern/nucc)
 endif()
 
-# file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB SOURCES 
+    src/asbr/message_info.cpp
+)
 add_library(cc2_binary_data STATIC ${SOURCES})
 target_include_directories(cc2_binary_data PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
