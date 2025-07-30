@@ -85,16 +85,8 @@ public:
         return result;
     }
     
-    static nlohmann::ordered_json write(const asbr::message_info& param, std::filesystem::path hashlist_path = "") {
+    static nlohmann::ordered_json write(const asbr::message_info& param) {
         nlohmann::ordered_json result;
-
-        kojo::binary hashlist_store{hashlist_path};
-        kojo::binary_view hashlist_data{hashlist_store};
-        std::unordered_map<std::string, std::string> hashlist;
-        while (hashlist_data.get_pos() < hashlist_store.size()) {
-            std::string buffer = hashlist_data.read<std::string_view>().data();
-            hashlist[buffer] = hashlist_data.read<std::string_view>();
-        }
 
         result["Version"] = 250730;
         result["Filetype"] = "messageInfo";
@@ -104,15 +96,15 @@ public:
             auto& entry = param.entries.at(key);
 
             std::string hash = std::format("{:08x}", key);
-            if (hashlist.contains(hash)) {
-                hash = hashlist[hash];
+            if (param.hashlist.contains(hash)) {
+                hash = param.hashlist.at(hash);
             }
             nlohmann::ordered_json& json_entry = result[hash];
 
             if (entry.ref_crc32_id.id() != 0) {
                 hash = std::format("{:08x}", entry.ref_crc32_id.id());
-                if (hashlist.contains(hash)) {
-                    hash = hashlist[hash];
+                if (param.hashlist.contains(hash)) {
+                    hash = param.hashlist.at(hash);
                 }
                 json_entry["Reference"] = hash;
             } else {
@@ -130,7 +122,7 @@ public:
     }
 
 private:
-    static std::unordered_map<std::string_view, int> adx2_file_list;
+    inline static std::unordered_map<std::string_view, int> adx2_file_list;
 
     static void load_adx2_file_list() {
         if (!adx2_file_list.empty()) return;

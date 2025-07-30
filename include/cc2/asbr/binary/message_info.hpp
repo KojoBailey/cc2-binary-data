@@ -50,6 +50,12 @@ public:
             entry_buffer.cue_index      = data.read<std::int16_t>(std::endian::little);
             data.change_pos(6); // Skip unknown constants.
 
+            entry_buffer.has_crc32_id = true;
+            entry_buffer.has_message = true;
+            entry_buffer.has_ref_crc32_id = true;
+            entry_buffer.has_file_index = true;
+            entry_buffer.has_cue_index = true;
+
             result.entries[entry_buffer.key()] = entry_buffer;
         }
 

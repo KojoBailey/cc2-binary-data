@@ -3,6 +3,8 @@
 
 #include <nucc/utils/crc32.hpp>
 
+#include <kojo/logger.hpp>
+
 #include <cstdint>
 #include <format>
 #include <string>
@@ -14,10 +16,11 @@ namespace cc2::asbr {
 class message_info {    
 public:
     struct entry { 
+        std::string id;
         nucc::crc32 crc32_id;
-        std::string message{"<EMPTY>"};
+        std::string ref_id;
         nucc::crc32 ref_crc32_id;
-        // std::int16_t is_ref{-1};
+        std::string message;
         std::int64_t file_index{-1};
         std::int64_t cue_index{-1};
 
@@ -37,12 +40,19 @@ public:
     std::unordered_map<std::uint32_t, entry> entries;
     std::vector<std::uint32_t> sorted_keys;
 
+    std::unordered_map<std::string, std::string> hashlist;
+
     std::uint32_t version{1001};
-    std::string language{"Unknown"};
+    std::string language{"unknown"};
+
+    void load_hashlist(std::filesystem::path hashlist_path);
 
     void sort_keys();
 
     void merge(message_info& param);
+
+private:
+    kojo::logger log{"messageInfo"};
 };
 
 }
