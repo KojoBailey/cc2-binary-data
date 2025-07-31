@@ -33,7 +33,7 @@ public:
         std::uint32_t key() const {
             return crc32_id.id();
         }
-        std::string order_key() {
+        std::string order_key() const {
             return std::format("{:03}{:03}{}", file_index, cue_index, crc32_id.string());
         }
     };

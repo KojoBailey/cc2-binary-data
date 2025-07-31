@@ -41,6 +41,9 @@ public:
             asbr::message_info::entry entry_buffer;
 
             entry_buffer.crc32_id.load(key);
+            if (key != entry_buffer.crc32_id.string()) {
+                entry_buffer.id = key;
+            }
 
             if (value.contains("Reference")) {
                 std::string reference_str = value["Reference"];
@@ -95,18 +98,22 @@ public:
         for (std::uint32_t key : param.sorted_keys) {
             auto& entry = param.entries.at(key);
 
-            std::string hash = std::format("{:08x}", key);
-            if (param.hashlist.contains(hash)) {
-                hash = param.hashlist.at(hash);
+            std::string id;
+            if (entry.id != "") {
+                id = entry.id;
+            } else {
+                id = entry.crc32_id.string();
             }
-            nlohmann::ordered_json& json_entry = result[hash];
+            nlohmann::ordered_json& json_entry = result[id];
 
             if (entry.ref_crc32_id.id() != 0) {
-                hash = std::format("{:08x}", entry.ref_crc32_id.id());
-                if (param.hashlist.contains(hash)) {
-                    hash = param.hashlist.at(hash);
+                std::string ref_id;
+                if (entry.ref_id != "") {
+                    ref_id = entry.ref_id;
+                } else {
+                    ref_id = entry.ref_crc32_id.string();
                 }
-                json_entry["Reference"] = hash;
+                json_entry["Reference"] = ref_id;
             } else {
                 json_entry["Message"] = entry.message;
             }

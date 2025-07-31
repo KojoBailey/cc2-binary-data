@@ -1,8 +1,8 @@
 #include <cc2/asbr/message_info.hpp>
 
-#include <algorithm>
-
 #include <kojo/binary.hpp>
+
+#include <algorithm>
 
 using namespace cc2::asbr;
 
@@ -12,6 +12,17 @@ void message_info::load_hashlist(std::filesystem::path hashlist_path) {
     while (hashlist_data.get_pos() < hashlist_store.size()) {
         std::string buffer = hashlist_data.read<std::string_view>().data();
         hashlist[buffer] = hashlist_data.read<std::string_view>();
+    }
+
+    for (auto& [key, value] : entries) {
+        std::string crc32_id = value.crc32_id.string();
+        if (hashlist.contains(crc32_id))
+            value.id = hashlist.at(crc32_id);
+
+        if (value.ref_crc32_id.id() == 0) continue;
+        std::string ref_crc32_id = value.ref_crc32_id.string();
+        if (hashlist.contains(ref_crc32_id))
+            value.ref_id = hashlist.at(ref_crc32_id);
     }
 }
 
@@ -29,8 +40,6 @@ void message_info::sort_keys() {
 }
 
 void message_info::merge(message_info& param) {
-    log.show_debug = true;
-
     if (language != param.language) {
         log.warn(
             kojo::logger::status::value_mismatch,
@@ -43,6 +52,8 @@ void message_info::merge(message_info& param) {
     for (auto& [key, value] : param.entries) {
         if (!entries.contains(key)) {
             entries[key] = value;
+            log.show_debug = true;
+            log.debug(std::format("Adding {:08x}: {}.", entries[key].key(), entries[key].message));
             continue;
         }
         auto& entry = entries[key];
