@@ -12,6 +12,8 @@ public:
     std::map<std::string, nucc::rgb> entries;
 
     std::uint32_t version{1000};
+
+    void merge(player_color_param&);
 };
 
 }

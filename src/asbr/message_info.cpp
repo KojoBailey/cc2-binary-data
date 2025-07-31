@@ -52,8 +52,6 @@ void message_info::merge(message_info& param) {
     for (auto& [key, value] : param.entries) {
         if (!entries.contains(key)) {
             entries[key] = value;
-            log.show_debug = true;
-            log.debug(std::format("Adding {:08x}: {}.", entries[key].key(), entries[key].message));
             continue;
         }
         auto& entry = entries[key];

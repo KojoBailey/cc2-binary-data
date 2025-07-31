@@ -49,7 +49,7 @@ public:
 
     void sort_keys();
 
-    void merge(message_info& param);
+    void merge(message_info&);
 
 private:
     kojo::logger log{"messageInfo"};
