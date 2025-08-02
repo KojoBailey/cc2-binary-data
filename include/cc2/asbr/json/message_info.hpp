@@ -6,8 +6,8 @@
 
 #include <kojo/logger.hpp>
 
-#include <filesystem>
 #include <format>
+#include <regex>
 
 namespace cc2 {
 
@@ -32,7 +32,7 @@ public:
 
         std::unordered_map<std::string, std::string> colors;
         for (auto& [key, value] : json["Colors"].items()) {
-            colors[key] = value.template get<std::string>().substr(1, 8);
+            colors[key] = value.get<std::string>().substr(1, 8);
         }
 
         for (const auto& [key, value] : json.items()) {
@@ -47,7 +47,7 @@ public:
 
             if (value.contains("Reference")) {
                 std::string reference_str = value["Reference"];
-                entry_buffer.ref_crc32_id = nucc::crc32::hash(reference_str);
+                entry_buffer.ref_crc32_id.load(reference_str);
                 entry_buffer.has_ref_crc32_id = true;
                 entry_buffer.message = std::format("<text {} text_2 />", reference_str);
                 entry_buffer.has_message = true;
@@ -209,7 +209,7 @@ private:
         adx2_file_list["v_sys_8wou01"]  = 75;
     }
 
-    static int convert_file_str(std::string file) {
+    static int convert_file_str(const std::string& file) {
         if (!adx2_file_list.contains(file)) return -1;
         return adx2_file_list[file];
     }
@@ -296,4 +296,4 @@ private:
 
 }
 
-#endif // KOJO_CC2_ASBR_JSON_MESSAGEINFO
+#endif

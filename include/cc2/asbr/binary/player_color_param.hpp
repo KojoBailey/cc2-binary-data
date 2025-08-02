@@ -1,6 +1,7 @@
 #ifndef KOJO_CC2_ASBR_BINARY_PLAYERCOLORPARAM
 #define KOJO_CC2_ASBR_BINARY_PLAYERCOLORPARAM
 
+#include <ranges>
 #include <cc2/binary_serializer.hpp>
 #include <cc2/asbr/player_color_param.hpp>
 
@@ -55,12 +56,11 @@ public:
     static kojo::binary write(const asbr::player_color_param& param) {
         kojo::binary output_data;
 
-        const size_t HEADER_SIZE = 16;
-        const size_t ENTRY_SIZE = 24;
-        const size_t CHARACTER_ID_LENGTH = 8;
+        constexpr size_t ENTRY_SIZE = 24;
+        constexpr size_t CHARACTER_ID_LENGTH = 8;
 
         const std::uint32_t entry_count = param.entries.size();
-        const std::uint64_t first_pointer = 8;
+        constexpr std::uint64_t first_pointer = 8;
         output_data.write<std::uint32_t>(param.version, std::endian::little);
         output_data.write<std::uint32_t>(entry_count, std::endian::little);
         output_data.write<std::uint64_t>(first_pointer, std::endian::little);
@@ -76,7 +76,7 @@ public:
             output_data.write<std::uint32_t>(entry.green, std::endian::little);
             output_data.write<std::uint32_t>(entry.blue, std::endian::little);
         }
-        for (auto& [key, entry] : param.entries) {
+        for (const auto &key: param.entries | std::views::keys) {
             const std::string character_id = key.substr(0, 4) + "0" + key.at(5);
             output_data.write<std::string_view>(character_id, CHARACTER_ID_LENGTH);
         }

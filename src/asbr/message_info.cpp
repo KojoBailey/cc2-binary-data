@@ -3,10 +3,11 @@
 #include <kojo/binary.hpp>
 
 #include <algorithm>
+#include <ranges>
 
 using namespace cc2::asbr;
 
-void message_info::load_hashlist(std::filesystem::path hashlist_path) {
+void message_info::load_hashlist(const std::filesystem::path& hashlist_path) {
     kojo::binary hashlist_store{hashlist_path};
     kojo::binary_view hashlist_data{hashlist_store};
     while (hashlist_data.get_pos() < hashlist_store.size()) {
@@ -14,7 +15,7 @@ void message_info::load_hashlist(std::filesystem::path hashlist_path) {
         hashlist[buffer] = hashlist_data.read<std::string_view>();
     }
 
-    for (auto& [key, value] : entries) {
+    for (auto &value: entries | std::views::values) {
         std::string crc32_id = value.crc32_id.string();
         if (hashlist.contains(crc32_id))
             value.id = hashlist.at(crc32_id);
@@ -29,13 +30,12 @@ void message_info::load_hashlist(std::filesystem::path hashlist_path) {
 void message_info::sort_keys() {
     sorted_keys.clear();
     sorted_keys.reserve(entries.size());
-    for (auto& [key, _] : entries) {
+    for (const auto &key: entries | std::views::keys) {
         sorted_keys.push_back(key);
     }
 
-    std::sort(sorted_keys.begin(), sorted_keys.end(),
-        [&](std::uint32_t a, std::uint32_t b) {
-            return entries.at(a).order_key() < entries.at(b).order_key();
+    std::ranges::sort(sorted_keys, [&](std::uint32_t a, std::uint32_t b) {
+      return entries.at(a).order_key() < entries.at(b).order_key();
     });
 }
 

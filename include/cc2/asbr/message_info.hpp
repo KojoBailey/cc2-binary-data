@@ -5,7 +5,6 @@
 
 #include <kojo/logger.hpp>
 
-#include <cstdint>
 #include <format>
 #include <string>
 #include <unordered_map>
@@ -45,7 +44,7 @@ public:
     std::uint32_t version{1001};
     std::string language{"unknown"};
 
-    void load_hashlist(std::filesystem::path hashlist_path);
+    void load_hashlist(const std::filesystem::path& hashlist_path);
 
     void sort_keys();
 
@@ -57,4 +56,4 @@ private:
 
 }
 
-#endif // KOJO_CC2_ASBR_MESSAGEINFO
+#endif

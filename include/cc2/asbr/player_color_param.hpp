@@ -18,4 +18,4 @@ public:
 
 }
 
-#endif // KOJO_CC2_ASBR_PLAYERCOLORPARAM
+#endif

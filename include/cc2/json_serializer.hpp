@@ -14,4 +14,4 @@ public:
 
 }
 
-#endif // KOJO_CC2_JSON_SERIALIZER
+#endif

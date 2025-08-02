@@ -16,7 +16,7 @@ public:
     static asbr::message_info read(const std::byte* src, const size_t start = 0) {
         asbr::message_info result;
         kojo::logger log{"CC2 Binary Data"};
-        
+
         if (src == nullptr) {
                 log.fatal(
                 kojo::logger::status::null_pointer,
@@ -44,8 +44,8 @@ public:
             data.change_pos(12); // Skip unknown constants.
             auto message_ptr            = data.read<std::uint64_t>(std::endian::little);
             entry_buffer.message        = data.read<std::string_view>(message_ptr - sizeof(message_ptr));
-            entry_buffer.ref_crc32_id   = data.read<std::uint32_t>(std::endian::big);
-            auto is_ref                 = data.read<std::int16_t>(std::endian::little); // Can be auto-detected.
+            entry_buffer.ref_crc32_id.load(data.read<std::uint32_t>(std::endian::big));
+            data.read<std::int16_t>(std::endian::little); // is_ref
             entry_buffer.file_index     = data.read<std::int16_t>(std::endian::little);
             entry_buffer.cue_index      = data.read<std::int16_t>(std::endian::little);
             data.change_pos(6); // Skip unknown constants.
@@ -63,11 +63,11 @@ public:
 
         return result;
     }
-    
+
     static kojo::binary write(const asbr::message_info& param) {
         kojo::binary output_data;
 
-        
+
 
         return output_data;
     }
@@ -75,4 +75,4 @@ public:
 
 }
 
-#endif // KOJO_CC2_ASBR_BINARY_MESSAGEINFO
+#endif

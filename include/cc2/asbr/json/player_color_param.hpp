@@ -23,7 +23,7 @@ public:
                 std::format("JSON data for entry \"{}\" is not a valid hex code.", key),
                 "Ensure all hex codes are strings with the format \"#RRGGBB\"."
             );
-            if (value.template get<std::string>().length() != 7) log.error(
+            if (value.get<std::string>().length() != 7) log.error(
                 kojo::logger::status::bad_value,
                 std::format("JSON data for entry \"{}\" is not a valid hex code.", key),
                 "Ensure all hex codes are strings with the format \"#RRGGBB\". Alpha channel is not supported."
@@ -52,4 +52,4 @@ public:
 
 }
 
-#endif // KOJO_CC2_ASBR_JSON_PLAYERCOLORPARAM
+#endif
