@@ -31,8 +31,10 @@ public:
         load_adx2_file_list();
 
         std::unordered_map<std::string, std::string> colors;
-        for (auto& [key, value] : json["Colors"].items()) {
-            colors[key] = value.get<std::string>().substr(1, 8);
+        if (json.contains("Colors")) {
+            for (auto& [key, value] : json["Colors"].items()) {
+                colors[key] = value.get<std::string>().substr(1, 8);
+            }
         }
 
         for (const auto& [key, value] : json.items()) {
